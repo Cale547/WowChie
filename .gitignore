@@ -1,0 +1,4 @@
+__pycache__
+.env
+storedScores.json
+userbase.txt
