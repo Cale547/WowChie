@@ -6,7 +6,7 @@ import datagetter
 import json
 
 class WowClient(discord.Client):
-    user: discord.ClientUser
+    #user: discord.ClientUser
 
     def __init__(self, *, intents: discord.Intents):
         super().__init__(intents=intents)
@@ -49,29 +49,28 @@ async def hello(interaction: discord.Interaction):
 
 @client.tree.command()
 async def stjärnor(interaction: discord.Interaction):
-    datagetter.fetch_data()
     """Visar vilka stjärnor alla har (- för del 1 och + för båda delar)"""
-    head = '```Användare      | Dagar    1111111111222222\n               | 1234567890123456789012345\n'
+    datagetter.fetch_data()
+    MAX_NAME_LENGTH = 15
+    head = f"```Användare{' '*(MAX_NAME_LENGTH - len("Användare"))}| Dagar    1111111111222222\n               | 1234567890123456789012345\n"
 
     with open("storedScores.json", 'r') as f:
         data = json.load(f)
-        members = data['members']
-        local_scores = {}        
-        for member in members:
-            local_scores[member] = members[member]["local_score"]
-        sorted(local_scores, reverse=True)
-        members = {k:v for k,v in}
-        
-
-    member_progress = [] 
+    members = data["members"]
+    local_scores = {}
     for member in members:
+        score = members[member]["local_score"]
+        if score != 0:
+            local_scores[member] = score
+    local_scores = dict(sorted(local_scores.items(), key=lambda tuple: tuple[1], reverse=True))
+
+    member_progress = []
+    for member in local_scores.keys():
         current_progress = ""
         member_dict = members[member]
-        if member_dict['stars'] == 0:
-            continue
         name = member_dict['name']
-        current_progress += name + ' '*(15 - len(member_dict['name'])) + "| "
-        for i in range (1,26):
+        current_progress += f"{name}{' '*(MAX_NAME_LENGTH - len(member_dict['name']))}| "
+        for i in range(1,26):
             try:
                 day = member_dict["completion_day_level"][str(i)]
                 try:
@@ -81,11 +80,34 @@ async def stjärnor(interaction: discord.Interaction):
                     current_progress += '-'
             except KeyError:
                 current_progress += ' '
-        member_progress.append((current_progress,member_dict["local_score"]))
+        member_progress.append(current_progress)
 
+    body = "\n".join(member_progress)
     body += "```"
     await interaction.response.send_message(head+body)
 
+@client.tree.command()
+async def topplista(interaction: discord.Interaction):
+    """Visar poäng, antal stjärnor, och tid för senaste stjärna"""
+    datagetter.fetch_data()
+    head = "```Namn          | Poäng   | Stjärnor | Datum        | Tid \n"
+    with open("storedScores.json", 'r') as f:
+        data = json.load(f)
+    members = data["members"]
+    local_scores = {}
+    for member in members:
+        score = members[member]["local_score"]
+        if score != 0:
+            local_scores[member] = score
+    local_scores = dict(sorted(local_scores.items(), key=lambda tuple: tuple[1], reverse=True))
+    
+    for member in local_scores.keys()
 
 
-client.run(os.environ.get("DISCORD_TOKEN"))
+
+
+@client.tree.command()
+async def senast(interaction: discord.Interaction):
+    datagetter.fetch_data()
+
+client.run(str(os.environ.get("DISCORD_TOKEN")))
