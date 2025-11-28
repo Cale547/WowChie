@@ -1,4 +1,5 @@
 import time
+from datetime import datetime, timezone
 
 def unix_to_human(ux_time):
     if isinstance(ux_time, float):
@@ -9,7 +10,7 @@ def unix_to_human(ux_time):
         return "Unable to calculate date for " + str(ux_time)
     
     time.localtime()
-    timezone_offset = 2 if time.daylight else 1
+    timezone_offset = 1#2 if time.daylight else 1
     time_left = ux_time + timezone_offset*3600 # unix time is one hour after glorious Sweden
 
 
@@ -68,3 +69,10 @@ def unix_to_human(ux_time):
     timestamp2 = [f'{hour:02d}:{minute:02d}:{second:02d}', f'{day:02d}/{month:02d}/{year:04d}']
     timestampDB = [f'{hour:02d}:{minute:02d}:{second:02d}', f'{year:04d}-{month:02d}-{day:02d}']
     return timestampDB
+
+def get_default_start_time(year: int, day: int) -> int:
+    """
+    Returns the official AoC start time (06:00 UTC) for a specific day.
+    You can set year manually or derive it from your data getter if needed.
+    """
+    return int(datetime(year, 12, day, 5, 0, 0, tzinfo=timezone.utc).timestamp())
