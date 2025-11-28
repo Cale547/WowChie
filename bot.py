@@ -8,7 +8,8 @@ import tools
 import re
 import time
 
-
+YEAR = 2025
+NUMBER_OF_DAYS = 12
 class WowClient(discord.Client):
     #user: discord.ClientUser
 
@@ -19,7 +20,7 @@ class WowClient(discord.Client):
     async def setup_hook(self):
         # Guild-id Test-Server = 935927889373847552
         # Guild-id Cale's AoC server = 1305513708059103283
-        guild = discord.Object(id=935927889373847552)
+        guild = discord.Object(id=1305513708059103283)
         self.tree.copy_global_to(guild=guild)
         await self.tree.sync(guild=guild)
 
@@ -33,16 +34,6 @@ client = WowClient(intents=intents)
 @client.event
 async def on_ready():
     print(f"Successfully logged in as {client.user}")
-
-@client.event
-async def on_message(message: str):
-    if str(message.author) == ".cale1":
-        await message.add_reaction('U+1F480')
-
-    if message.author == client.user: # Disregards any messages sent by itself
-        return
-    if message.content.find("7") != -1:
-        await message.channel.send("7")
 
 MAX_NAME_LENGTH = 15
 ############################################################################################# COMMANDS
@@ -73,7 +64,7 @@ async def stjärnor(interaction: discord.Interaction):
         member_dict = members[member]
         name = member_dict['name']
         current_progress += f"{name}{' '*(MAX_NAME_LENGTH - len(member_dict['name']))}| "
-        for i in range(1,26):
+        for i in range(1,NUMBER_OF_DAYS+1):
             try:
                 day = member_dict["completion_day_level"][str(i)]
                 try:
@@ -277,9 +268,9 @@ async def lokaltopplista(interaction: discord.Interaction):
                 starts = entry.get("starts", {})
                 start_time = starts.get(day, {}).get(part, None)
                 if start_time is None:
-                    start_time = tools.get_default_start_time(2025, int(day))
+                    start_time = tools.get_default_start_time(YEAR, int(day))
                 elif start_time > finish_time:
-                        start_time = tools.get_default_start_time(2025, int(day))
+                        start_time = tools.get_default_start_time(YEAR, int(day))
 
                 solve_time = finish_time - start_time
                 if solve_time > 0:

@@ -8,9 +8,12 @@ import tools
 
 load_dotenv()
 def fetch_data(force:bool=False):
-    if int(time.time()-os.path.getmtime("storedScores.json")) < 900 and not force:
-        print("Data was not fetched: data is too recent and force was not used.")
-        return -1
+    try:
+        if int(time.time()-os.path.getmtime("storedScores.json")) < 900 and not force:
+            print("Data was not fetched: data is too recent and force was not used.")
+            return -1
+    except FileNotFoundError:
+        print("storedScores doesn't exist, so what?")
     
     print("Fetching data at time", tools.unix_to_human(int(time.time())))
     url = f"https://adventofcode.com/{os.environ.get("YEAR")}/leaderboard/private/view/{os.environ.get("AOC_USER_ID")}.json"
