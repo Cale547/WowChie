@@ -72,7 +72,7 @@ def unix_to_human(ux_time):
 
 def get_default_start_time(year: int, day: int) -> int:
     """
-    Returns the official AoC start time (06:00 UTC) for a specific day.
+    Returns the official AoC start time (05:00 UTC) for a specific day.
     You can set year manually or derive it from your data getter if needed.
     """
     return int(datetime(year, 12, day, 5, 0, 0, tzinfo=timezone.utc).timestamp())
