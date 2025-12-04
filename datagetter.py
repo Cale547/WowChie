@@ -6,8 +6,8 @@ from dotenv import load_dotenv
 import schedule
 import tools
 
-load_dotenv()
 def fetch_data(force:bool=False):
+    load_dotenv()
     try:
         if int(time.time()-os.path.getmtime("storedScores.json")) < 900 and not force:
             print("Data was not fetched: data is too recent and force was not used.")
